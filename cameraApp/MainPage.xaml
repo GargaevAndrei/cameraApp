@@ -9,6 +9,6 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid >
-        <TextBlock Text="Test" FontSize="30"/>
+        <TextBlock Text="Test 1" FontSize="30"/>
     </Grid>
 </Page>
