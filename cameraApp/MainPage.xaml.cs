@@ -8,7 +8,11 @@ using System.Threading.Tasks;
 using Windows.Devices.Enumeration;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Graphics.Imaging;
 using Windows.Media.Capture;
+using Windows.Media.MediaProperties;
+using Windows.Storage;
+using Windows.Storage.Streams;
 using Windows.System.Display;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -31,11 +35,13 @@ namespace cameraApp
         private MediaCapture mediaCapture;
         bool isInitialized = false;
         private readonly DisplayRequest displayRequest = new DisplayRequest();
+        private StorageFolder storageFolder = null;
 
 
         public MainPage()
         {
             this.InitializeComponent();
+           
         }
 
         private static async  Task<DeviceInformationCollection> FindCameraDeviceAsync()
@@ -61,7 +67,6 @@ namespace cameraApp
                 DeviceInformation cameraDevice;
                 cameraDevice = cameraDeviceList[0];
                 mediaCapture = new MediaCapture();
-                //mediaCapture.Failed += MediaCaptureFiled;
 
                 var settings = new MediaCaptureInitializationSettings { VideoDeviceId = cameraDevice.Id };
 
@@ -96,6 +101,50 @@ namespace cameraApp
             await initializeCameraAsync();
         }
 
+        private async void MakePhoto_Click(object sender, RoutedEventArgs e)
+        {
+            await MakePhotoAsync();
+        }
 
+        private async Task MakePhotoAsync()
+        {
+            Debug.WriteLine("Make photo");
+            var ImagesLib = await StorageLibrary.GetLibraryAsync(KnownLibraryId.Pictures);
+            storageFolder = ImagesLib.SaveFolder ?? ApplicationData.Current.LocalFolder;
+
+            var stream = new InMemoryRandomAccessStream();
+            await mediaCapture.CapturePhotoToStreamAsync(ImageEncodingProperties.CreateJpeg(), stream);
+
+            try
+            {
+                var photofile = await storageFolder.CreateFileAsync("CameraPhoto.jpg", CreationCollisionOption.GenerateUniqueName);
+                await SavePhotoAsync(stream, photofile);
+                Debug.WriteLine("Photo saved in" + photofile.Path);
+            }
+            catch(Exception ex)
+            {
+                Debug.WriteLine("Exception while making photo" + ex.Message.ToString());
+            }
+        }
+
+        private async Task SavePhotoAsync(InMemoryRandomAccessStream stream, StorageFile photofile)
+        {
+            using (var photoStream = stream)
+            {
+                var decoder = await BitmapDecoder.CreateAsync(photoStream);
+                using(var photoFileStream = await photofile.OpenAsync(FileAccessMode.ReadWrite))
+                {
+                    var encoder = await BitmapEncoder.CreateForTranscodingAsync(photoFileStream, decoder);
+                    if((decoder.OrientedPixelWidth == 80) && (decoder.OrientedPixelHeight == 60))
+                    {
+                        encoder.BitmapTransform.InterpolationMode = BitmapInterpolationMode.Linear;
+                        encoder.BitmapTransform.ScaledHeight = 360;
+                        encoder.BitmapTransform.ScaledWidth = 480;
+                    }
+
+                    await encoder.FlushAsync();
+                }
+            }
+        }
     }
 }

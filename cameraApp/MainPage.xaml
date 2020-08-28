@@ -11,9 +11,22 @@
     <Grid >
         <CaptureElement x:Name="PreviewControl" Stretch="Uniform"/>
         <StackPanel HorizontalAlignment="Right" VerticalAlignment="Center">
+            <StackPanel.Resources>
+                <Style TargetType="Button">
+                    <Setter Property="Margin" Value="10,40"/>
+                    <Setter Property="MinWidth" Value="80"/>
+                    <Setter Property="MinHeight" Value="80"/>
+                    <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+                </Style>
+            </StackPanel.Resources>
             <Button x:Name="SwitchCam" Click="SwitchCam_Click">
                 <Viewbox MaxHeight="40" MaxWidth="40">
                     <SymbolIcon Symbol="Switch" RenderTransformOrigin="1,1"/>
+                </Viewbox>
+            </Button>
+            <Button x:Name="MakePhoto" Click="MakePhoto_Click">
+                <Viewbox MaxHeight="40" MaxWidth="40">
+                    <SymbolIcon Symbol="Camera"/>
                 </Viewbox>
             </Button>
         </StackPanel>
