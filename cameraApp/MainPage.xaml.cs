@@ -146,5 +146,34 @@ namespace cameraApp
                 }
             }
         }
+
+
+        InMemoryRandomAccessStream videoStream = new InMemoryRandomAccessStream();
+        LowLagMediaRecording _mediaRecording;
+        private async void StartRecord_Click(object sender, RoutedEventArgs e)
+        {
+            await StartRecordAsync();
+
+        }
+
+
+        private async Task StartRecordAsync()
+        {
+            Debug.WriteLine("StartRecord");
+
+            var myVideos = await Windows.Storage.StorageLibrary.GetLibraryAsync(Windows.Storage.KnownLibraryId.Pictures);
+            StorageFile file = await myVideos.SaveFolder.CreateFileAsync("video.mp4", CreationCollisionOption.GenerateUniqueName);
+            _mediaRecording = await mediaCapture.PrepareLowLagRecordToStorageFileAsync(MediaEncodingProfile.CreateMp4(VideoEncodingQuality.Vga), file);
+            await _mediaRecording.StartAsync();
+
+        }
+
+        private async void StopRecord_Click(object sender, RoutedEventArgs e)
+        {
+            await _mediaRecording.FinishAsync();
+        }
+
+
+
     }
 }

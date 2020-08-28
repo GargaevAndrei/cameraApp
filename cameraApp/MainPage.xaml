@@ -29,6 +29,16 @@
                     <SymbolIcon Symbol="Camera"/>
                 </Viewbox>
             </Button>
+            <Button x:Name="StartRecord" Click="StartRecord_Click">
+                <Viewbox MaxHeight="40" MaxWidth="40">
+                    <SymbolIcon Symbol="Video"/>
+                </Viewbox>
+            </Button>
+            <Button x:Name="StopRecord" Click="StopRecord_Click">
+                <Viewbox MaxHeight="40" MaxWidth="40">
+                    <SymbolIcon Symbol="Stop" RenderTransformOrigin="1,1"/>
+                </Viewbox>
+            </Button>
         </StackPanel>
     </Grid>
 </Page>
