@@ -9,6 +9,13 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid >
-        <TextBlock Text="Test 1" FontSize="30"/>
+        <CaptureElement x:Name="PreviewControl" Stretch="Uniform"/>
+        <StackPanel HorizontalAlignment="Right" VerticalAlignment="Center">
+            <Button x:Name="SwitchCam" Click="SwitchCam_Click">
+                <Viewbox MaxHeight="40" MaxWidth="40">
+                    <SymbolIcon Symbol="Switch" RenderTransformOrigin="1,1"/>
+                </Viewbox>
+            </Button>
+        </StackPanel>
     </Grid>
 </Page>
