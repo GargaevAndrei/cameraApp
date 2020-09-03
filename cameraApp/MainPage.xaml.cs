@@ -1,26 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.UI.Xaml;
+using System;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.Devices.Enumeration;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.Graphics.Imaging;
 using Windows.Media.Capture;
 using Windows.Media.MediaProperties;
 using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.System.Display;
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
+
 
 // Документацию по шаблону элемента "Пустая страница" см. по адресу https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x419
 
@@ -37,6 +30,8 @@ namespace cameraApp
         private readonly DisplayRequest displayRequest = new DisplayRequest();
         private StorageFolder storageFolder = null;
 
+        private InMemoryRandomAccessStream videoStream = new InMemoryRandomAccessStream();
+        private LowLagMediaRecording _mediaRecording;
 
         public MainPage()
         {
@@ -123,33 +118,61 @@ namespace cameraApp
             }
             catch(Exception ex)
             {
-                Debug.WriteLine("Exception while making photo" + ex.Message.ToString());
+                Debug.WriteLine("Exception while making photo " + ex.Message.ToString());
             }
         }
 
         private async Task SavePhotoAsync(InMemoryRandomAccessStream stream, StorageFile photofile)
         {
+
             using (var photoStream = stream)
             {
                 var decoder = await BitmapDecoder.CreateAsync(photoStream);
                 using(var photoFileStream = await photofile.OpenAsync(FileAccessMode.ReadWrite))
-                {
+                {                    
                     var encoder = await BitmapEncoder.CreateForTranscodingAsync(photoFileStream, decoder);
+                  
+
                     if((decoder.OrientedPixelWidth == 80) && (decoder.OrientedPixelHeight == 60))
                     {
                         encoder.BitmapTransform.InterpolationMode = BitmapInterpolationMode.Linear;
                         encoder.BitmapTransform.ScaledHeight = 360;
                         encoder.BitmapTransform.ScaledWidth = 480;
+                       
                     }
 
+                    
                     await encoder.FlushAsync();
                 }
+            }            
+
+
+        }
+
+       /* private void CanvasControl_CreateResources(Microsoft.Graphics.Canvas.UI.Xaml.CanvasControl sender, Microsoft.Graphics.Canvas.UI.CanvasCreateResourcesEventArgs args)
+        {
+            args.TrackAsyncAction(CreateResourcesAsync(sender).AsAsyncAction());
+        }
+
+        CanvasBitmap cbi;
+        async Task CreateResourcesAsync(CanvasControl sender)
+        {
+            try
+            {
+                cbi = await CanvasBitmap.LoadAsync(sender, @"C:\temp\CameraPhoto.jpg");
+            }
+            catch(Exception ex)
+            {
+                Debug.WriteLine(ex);
             }
         }
 
+        private void CanvasControl_Draw(Microsoft.Graphics.Canvas.UI.Xaml.CanvasControl sender, Microsoft.Graphics.Canvas.UI.Xaml.CanvasDrawEventArgs args)
+        {
+            args.DrawingSession.DrawImage(cbi);
+        }*/
 
-        InMemoryRandomAccessStream videoStream = new InMemoryRandomAccessStream();
-        LowLagMediaRecording _mediaRecording;
+       
         private async void StartRecord_Click(object sender, RoutedEventArgs e)
         {
             await StartRecordAsync();

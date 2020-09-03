@@ -5,11 +5,23 @@
     xmlns:local="using:cameraApp"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    
+    xmlns:canvas="using:Microsoft.Graphics.Canvas.UI.Xaml"
+    
     mc:Ignorable="d" 
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid >
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" >
+
+        <Image Source="C:\temp\CameraPhoto.jpg" />
+        
         <CaptureElement x:Name="PreviewControl" Stretch="Uniform"/>
+
+       <!-- <canvas:CanvasControl Width="500" Height="300" x:Name="canv"
+            Draw="CanvasControl_Draw" CreateResources="CanvasControl_CreateResources" ClearColor="LightGray"/>-->
+        
+       
+        
         <StackPanel HorizontalAlignment="Right" VerticalAlignment="Center">
             <StackPanel.Resources>
                 <Style TargetType="Button">
